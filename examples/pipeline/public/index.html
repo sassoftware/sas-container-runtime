@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<!--
+  ~ /* ------------------------------------------------------------------------------------
+  ~  * Copyright (c) SAS Institute Inc.
+  ~  *  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  * you may not use this file except in compliance with the License.
+  ~  * You may obtain a copy of the License at
+  ~  *
+  ~  * http://www.apache.org/licenses/LICENSE-2.0
+  ~  *
+  ~  *  Unless required by applicable law or agreed to in writing, software
+  ~  * distributed under the License is distributed on an "AS IS" BASIS,
+  ~  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  * See the License for the specific language governing permissions and
+  ~ * limitations under the License.
+  ~ ----------------------------------------------------------------------------------------*/
+  ~
+  -->
+  <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      function runPipeline() {
+        let config = {
+          url: `${window.location.protocol}//${window.location.host}/pipeline`,
+          method: 'GET',
+          params: {
+            key: document.getElementById('key').value,
+            count: document.getElementById('count').value,
+            repeat: document.getElementById('repeat').value,
+            csv: document.getElementById('csv').value
+          }
+        }
+        document.getElementById('result1').innerHTML = 'Running pipeline';
+        console.log(config);
+        axios(config)
+          .then (r => {
+            document.getElementById('result1').textContent = JSON.stringify(r.data, null,4);
+          })
+          .catch(err => {
+            document.getElementById('result1').textContent = JSON.stringify(err, null,4);
+          });
+      }
+      function runFind() {
+         let config = {
+          url: `${window.location.protocol}//${window.location.host}/find`,
+          method: 'GET',
+          params: {
+            key: document.getElementById('keyfind').value,
+          }
+        }
+        document.getElementById('result2').innerHTML = 'Running find';
+         axios(config)
+          .then (r => {
+            //let t = JSON.parse(r.data);
+            document.getElementById('result2').textContent = JSON.stringify(r.data, null,4);
+          })
+          .catch(err => {
+            document.getElementById('result2').textContent = JSON.stringify(err, null,4);
+          });
+      }
+
+      function setImage(n) {
+        debugger;
+        for (let i=0; i < 6; i++) {
+            document.getElementById(`img${i+1}`).hidden=true;
+        }
+        document.getElementById(`img${n}`).hidden=false;
+      }
+    </script>
+    </head>
+    <body>
+      <h1> SCR In Action</h1>
+        <button onclick="setImage(1)"> Common Scenario</button>
+        <button onclick="setImage(2)"> Multi Container Deployment</button>
+        <button onclick="setImage(4)"> Run Pipeline</button>
+        <button onclick="setImage(5)"> Find By Key</button>
+  
+        <br/>
+        <br/>
+        <div id='img1'> 
+
+           <img src="pipeline-scenario.png" width="800" height="600"/>
+        </div>
+        
+        <div id="img2" hidden>
+           <img src="pipeline-simple.png" width="800" height="600"/>
+           <br/>
+           <pre>
+version: '3.3'
+services:
+    redis: 
+        image: scrdemosrgcr.azurecr.io/redis:latest
+        restart: unless-stopped
+        container_name: redisc
+        ports:
+            - 6379:6379
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+            - REDIS_AOF_ENABLED=no
+    scr:
+        image: scrdemosrgcr.azurecr.io/homeloan:1.0.0
+        restart: unless-stopped
+        container_name: scrc  
+        expose:
+            - 8080
+        environment:
+            - SAS_SCR_LOG_LEVEL_SCR_IO=DEBUG
+    persist:
+        image: scrdemosrgcr.azurecr.io/dbredis:1.0.0
+        restart: unless-stopped
+        container_name: persistc
+        depends_on:
+            - redis
+        expose:
+            - 80
+        environment:
+            - DEBUG=persist
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+    scrwrapper:
+        image: scrdemosrgcr.azurecr.io/scrwrapper:1.0.0
+        restart: unless-stopped
+        container_name: scrwrapperc
+        depends_on: 
+            - scr
+            - persist
+        expose:
+            - 80
+        environment:
+            - TARGET=http://persist/persist
+            - SCR_URL=http://scr:8080/homeloan
+            - DROP=BAD
+            - DEBUG=scrwrapper
+    db:
+        image: scrdemosrgcr.azurecr.io/dbcsv:1.0.0
+        restart: unless-stopped
+        container_name: dbcsvc
+        depends_on:
+            - scrwrapper
+        expose:
+            - 80
+        environment:
+            - TARGET=http://scrwrapper/scrwrapper
+            - DEBUG=db
+    pipeline:
+        image: scrdemosrgcr.azurecr.io/pipeline:1.0.0
+        container_name: pipelinec
+        depends_on:
+            - db
+            - scrwrapper
+            - persist
+            - scr
+            - redis
+        ports:
+            - 8080:80
+        environment:
+            - TARGET=http://db/db
+            - CSV=./hmeq.csv
+            - COUNT=5
+            - DEBUG=pipeline
+            - KEY=scr
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+
+
+           </pre>
+
+        </div>
+    
+
+        <div id="img4" hidden>
+        <h2> Run the Pipeline</h2>
+        <input id='key' value='hl'>
+        <label for="keyl">Key</label><br>
+        <br/>
+        <input id="count" value=10 type="number"/>
+        <label for="count">Count</label><br>
+        <br/>
+        <input id="repeat" value=10 type="number">
+        <label for="repeat">Repeat</label><br>
+        <br/>
+        <br/>
+        <input id="csv" value="./hmeq.csv" type="text"/>
+        <label for="csv">csv</label><br>
+        <br/>
+        <button onclick="runPipeline()"> Press to run pipeline</button>
+        <br/>
+        <pre id='result1'></pre>
+        </div>
+
+
+        <div id="img5" hidden>
+        <h2> Find a record by key</h2>
+             <input id='keyfind' value='hl:1'>
+              <button onclick="runFind()"> Find</button>
+
+        <pre id='result2'></pre>
+        </div>
+
+       
+    </body>
+    </html>

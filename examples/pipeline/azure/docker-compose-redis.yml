@@ -1,0 +1,90 @@
+version: '3.3'
+services:
+    redis: 
+        image: scrdemosrgcr.azurecr.io/redis:latest
+        restart: unless-stopped
+        container_name: redisc
+        ports:
+            - 6379:6379
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+            - REDIS_AOF_ENABLED=no
+    scr:
+        image: scrdemosrgcr.azurecr.io/homeloan:1.0.0
+        restart: unless-stopped  
+        deploy:
+            replicas: 2
+        expose:
+            - 8080
+#        environment:
+#           - SAS_SCR_LOG_LEVEL_SCR_IO=DEBUG
+
+    dbconsole:
+        image: scrdemosrgcr.azurecr.io/dbconsole:1.0.0
+        restart: unless-stopped
+        deploy:
+            replicas: 2
+        expose: 
+            - 80
+        environment:
+            - DEBUG=dbconsole
+            - DETAILS=short
+
+    persist:
+        image: scrdemosrgcr.azurecr.io/dbredis:1.0.0
+        restart: unless-stopped
+        depends_on:
+            - redis
+        expose:
+            - 80
+        environment:
+#            - DEBUG=persist
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+
+
+    scrwrapper:
+        image: scrdemosrgcr.azurecr.io/scrwrapper:1.0.0
+        restart: unless-stopped
+        deploy:
+            replicas: 2
+        depends_on: 
+            - scr
+            - persist
+        expose:
+            - 80
+        environment:
+#            - TARGET=http://dbconsole/dbconsole
+            - TARGET=http://persist/persist
+            - SCR_URL=http://scr:8080/homeloan
+            - DROP=BAD
+#            - DEBUG=scrwrapper
+    db:
+        image: scrdemosrgcr.azurecr.io/dbcsv:1.0.0
+        restart: unless-stopped
+        depends_on:
+            - scrwrapper
+        expose:
+            - 80
+        environment:
+            - TARGET=http://scrwrapper/scrwrapper
+#            - DEBUG=db
+    pipeline:
+        image: scrdemosrgcr.azurecr.io/pipeline:1.0.0
+        depends_on:
+            - db
+            - scrwrapper
+            - persist
+            - scr
+            - redis
+        ports:
+            - 8080:80
+        environment:
+            - TARGET=http://db/db
+            - CSV=./hmeq.csv
+            - COUNT=5
+            - REPEAT=1
+#            - DEBUG=pipeline
+            - KEY=scr
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379

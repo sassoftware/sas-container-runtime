@@ -1,0 +1,74 @@
+version: '3.3'
+services:
+    redis: 
+        image: myacr.azurecr.io/redis:1.0.0
+        restart: unless-stopped
+        container_name: redisc
+        ports:
+            - 8080:6379
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+        
+    scr:
+        image: myacr.azurecr.io/homeloan:1.0.0
+        restart: unless-stopped
+        container_name: scrc  
+        expose:
+            - 8080
+        environment:
+            - SAS_SCR_LOG_LEVEL_SCR_IO=DEBUG
+    persist:
+        image: dbredis:1.0.0
+        restart: unless-stopped
+        container_name: persistc
+        links:
+            - redis
+        expose:
+            - 80
+        environment:
+            - DEBUG=persist
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - REDIS_KEY=HOMELOAN
+
+    scrwrapper:
+        image: scrwrapper:1.0.0
+        restart: unless-stopped
+        container_name: scrwrapperc
+        links: 
+            - scr
+            - persist
+        expose:
+            - 80
+        environment:
+            - TARGET=http://persist/dbredis
+            - SCR_URL=http://scr:8080/homeloan
+            - DEBUG=scrwrapper
+    db:
+        image: dbcsv:1.0.0
+        restart: unless-stopped
+        container_name: dbcsvc
+        links:
+            - scrwrapper
+        expose:
+            - 80
+        environment:
+            - TARGET=http://scrwrapper/score
+            - DEBUG=db
+    pipeline:
+        image: pipeline:1.0.0
+        restart: unless-stopped
+        container_name: pipelinec
+        links:
+            - db
+            - scrwrapper
+            - persist
+            - scr
+            - redis
+        ports:
+            - 80:80
+        environment:
+            - TARGET=http://db/dbcsv
+            - CSV=./hmeq.csv
+            - COUNT=100
+            - KEY=homeloan

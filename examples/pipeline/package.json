@@ -1,0 +1,27 @@
+{
+  "name": "composition-simple",
+  "version": "1.2.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "pipeline": "node scripts/pipeline.js",
+    "list": "node scripts/listRecords",
+    "find": "node scripts/findRecord"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cookie-parser": "~1.4.3",
+    "csvtojson": "^2.0.10",
+    "debug": "~2.6.9",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "http-errors": "~1.6.2",
+    "morgan": "~1.9.0",
+    "pug": "^3.0.2",
+    "redis": "^3.1.2"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3",
+    "supertest": "^3.0.0"
+  }
+}
