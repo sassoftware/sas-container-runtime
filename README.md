@@ -28,7 +28,7 @@ These examples are in the examples directory.
 
 - `Pipeline` - A multi-container approach to building a scoring pipeline
 
-- `LowCode_NoCode` - A demonstration of how to build a low-code/no-code application with Azure Power App
+- `scrAuthenticationWithAzureAD` - Configure Authentication for SAS Container Runtime (SCR) in Azure AD
 
 ## Contributing
 
