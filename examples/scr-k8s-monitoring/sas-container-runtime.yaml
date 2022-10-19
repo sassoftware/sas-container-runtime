@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scr-deployment
+  labels:
+    app: scr
+spec:
+  replicas: <pod_number>
+  selector:
+    matchLabels:
+      app: scr
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/prometheus"
+        prometheus.io/port: "8080"
+      labels:
+        app: scr
+    spec:
+      containers:
+      - name: scr
+        image: <scr_image>
+        env:
+        - name: SAS_SCR_LOG_STRUCTURED
+          value: "true"
+        # - name: SAS_SCR_APP_PATH
+        #   value:
+        # - name: SAS_SCR_PROMETHEUS_RATE
+        #   value:
+        # - name: SAS_SCR_INPUT_SCORE_VARIABLE
+        #   value:
+        # - name: SAS_SCR_OUTPUT_SCORE_VARIABLE
+        #   value:
+        # - name: SAS_SCR_INPUT_SCORE_MAX
+        #   value:
+        # - name: SAS_SCR_OUTPUT_SCORE_MAX
+        #   value:
+        # - name: SAS_SCR_SCORE_BINS
+        #   value:
+        resources:
+          limits:
+            memory: <pod_memory_limit>
+            cpu: <pod_cpu_limit>
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scr-service
+spec:
+  selector:
+    app: scr
+  ports:
+    - port: 8080

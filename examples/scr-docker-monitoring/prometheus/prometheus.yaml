@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'scr'
+    metrics_path: '/prometheus'
+    docker_sd_configs:
+    - host: unix:///var/run/docker.sock
+    relabel_configs:
+    - source_labels: [__meta_docker_container_label_prometheus_io_scrape]
+      regex: true
+      action: keep

@@ -1,0 +1,58 @@
+fluentd:
+fileConfigs:
+  01_sources.conf: |-
+    <source>
+      @type tail
+      @id in_tail_container_logs
+      @label @LOGFILTER
+      path /var/log/containers/*.log
+      pos_file /var/log/fluentd-containers.log.pos
+      tag scr.*
+      read_from_head true
+      <parse>
+        @type json
+        time_key timeStamp
+        time_type string
+        time_format %iso8601
+        keep_time_key false
+      </parse>
+      emit_unmatched_lines true
+    </source>
+    <label @LOGFILTER>
+      <filter **>
+        @type record_transformer
+        <record>
+          log_json ${record["log"]}
+        </record>
+      </filter>
+      <filter **>
+        @type parser
+        @log_level debug
+        key_name log_json
+        reserve_data true
+        remove_key_name_field true
+        emit_invalid_record_to_error false
+        <parse>
+          @type json
+        </parse>
+      </filter>
+      <filter **>
+        @type kubernetes_metadata
+        skip_labels false
+        skip_container_metadata false
+        skip_namespace_metadata true
+        skip_master_url true
+      </filter>
+      <match **>
+        @type relabel
+        @label @ESOUTPUT
+      </match>
+    </label>
+    <label @ESOUTPUT>
+      <match **>
+        @type elasticsearch
+        host "elasticsearch-master"
+        port 9200
+        path ""
+      </match>
+    </label>

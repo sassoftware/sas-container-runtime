@@ -1,0 +1,6 @@
+nodeExporter:
+  enabled: false
+server:
+  global:
+    scrape_interval: 5s
+    scrape_timeout: 2s
