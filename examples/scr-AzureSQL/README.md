@@ -69,11 +69,11 @@ def execute (id):
 
 2. The "DependentPackages" will be installed with the container when published, `pyodbc` is required.
 
-3. Since it is unlikely that the Viya installation will include the Microsoft ODBC drivers along the python installation, the decision will not run in the context o SAS Intelligent Decisioning UI (CAS), only through the SAS Container Runtime.
+3. Since it is unlikely that the Viya installation will include the Microsoft ODBC drivers along with the python installation, the decision will not run in the context o SAS Intelligent Decisioning UI (CAS), only through the SAS Container Runtime.
 
 ## Create a Dockerfile<a name="dockerfile"></a>
 
-After the previous node has been added and published to a Container Destination, create a `Dockerfile` that will modify the container installing the required ODBC drivers as follows:
+After the previous node has been added and published to a Container Destination, create a `Dockerfile` that will modify the container by installing the required ODBC drivers as follows:
 
 ```sh
 ## If editing the Dockerfile created when published to Github remove the "FROM" row
