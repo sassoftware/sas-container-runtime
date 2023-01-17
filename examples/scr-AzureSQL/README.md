@@ -25,27 +25,58 @@ Here is an example of Python code that performs queries against an Azure SQL dat
 
 
 ```python
-import os
 import pyodbc
-import pandas
+import pandas as pd
+import os 
+import time
+import logging
 
-server = '<my.database.windows.net>'
-database = '<database-name>'
-username = os.environ['db_username'] ## Avoid hard coding
-password = os.environ['db_secret'] ## Avoid hard coding
-driver= '{ODBC Driver 18 for SQL Server}'
+## Connection function, not directly called by SAS
+def connect (retry_count = 0, n_retries = 20):
+    server = 'py-scr.database.windows.net'
+    database = 'scr-py'
+    username = os.environ['db_username']
+    password = os.environ['db_secret']
+    driver= 'ODBC Driver 18 for SQL Server'
+    retry = True
 
-conn = pyodbc.connect('DRIVER='+driver+';SERVER=tcp:'+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) 
+    while retry and retry_count < n_retries:
+        try:
+            conn = pyodbc.connect('DRIVER='+driver+';SERVER=tcp:'+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) 
+            retry = False
+        except:
+            retry_count = retry_count + 1
+            logging.warning("WARNING: Initial connection failed, retry attempt " + str(retry_count))
+            
+            if retry_count == n_retries:
+                raise Exception("Reconnection Failed " + retry_count + " times, aborting") 
+                
+            time.sleep(1)
+    
+    return conn
 
+## Run once to setup the environment connection
+conn = connect()
+
+## Function that SAS calls
 def execute (id):
     'Output:CLAGE,CLNO,DEBTINC,DELINQ,DEROG,JOB,LOAN,MORTDUE,NINQ,REASON,VALUE,YOJ'
     '''DependentPackages: pandas,pyodbc'''
 	
     global conn
-    
+
+    retry = True
+
     query = "SELECT * FROM dbo.hmeq_id where id = " + str(id)
-    user = pd.read_sql(query, conn)
     
+    while retry:
+        try:
+            user = pd.read_sql(query, conn)
+            retry = False
+        except:
+            logging.warning("WARNING: Connection failed, retrying")
+            conn = connect()
+
     LOAN = user["LOAN"].item()
     MORTDUE = user["MORTDUE"].item()
     VALUE = user["VALUE"].item()
@@ -65,11 +96,9 @@ def execute (id):
 
 ### Notes: 
 
-1. This example does not cover retrying connection in case of failure/loss of connections. Alternatives are to move the connection string inside the `execution` function to be stablished every call (incurring performance issues) or having an error handler that recreates the connection if necessary.
+1. The "DependentPackages" will be installed with the container when published, `pyodbc` is required.
 
-2. The "DependentPackages" will be installed with the container when published, `pyodbc` is required.
-
-3. Since it is unlikely that the Viya installation will include the Microsoft ODBC drivers along with the python installation, the decision will not run in the context o SAS Intelligent Decisioning UI (CAS), only through the SAS Container Runtime.
+2. Since it is unlikely that the Viya installation will include the Microsoft ODBC drivers along with the python installation, the decision will not run in the context o SAS Intelligent Decisioning UI (CAS), only through the SAS Container Runtime.
 
 ## Create a Dockerfile<a name="dockerfile"></a>
 
