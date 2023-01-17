@@ -40,7 +40,7 @@ def connect (retry_count = 0, n_retries = 20):
     driver= 'ODBC Driver 18 for SQL Server'
     retry = True
 
-    while retry and retry_count < n_retries:
+    while retry and retry_count <= n_retries:
         try:
             conn = pyodbc.connect('DRIVER='+driver+';SERVER=tcp:'+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) 
             retry = False
