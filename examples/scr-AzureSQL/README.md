@@ -104,6 +104,8 @@ def execute (id):
 
 After the previous node has been added and published to a Container Destination, create a `Dockerfile` that will modify the container by installing the required ODBC drivers as follows:
 
+**Attention: Running this script will automatically accept two Microsoft's EULAs, if you are unfamiliar with them, they should be reviewed.**
+
 ```sh
 ## If editing the Dockerfile created when published to Github remove the "FROM" row
 FROM containerName:tag
