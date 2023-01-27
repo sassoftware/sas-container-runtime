@@ -1,18 +1,18 @@
-# pipeline-simple -- A composition of containers including SCR
+# Pipeline: A Composition of Containers Including SAS Container Runtime
 
-![Demo](./public/pipeline-simple.mp4)
-
-## Install and setup
-
-Please see [setup notes](dev.md) to setup the demo on your laptop. There also instructions there on running the demo on a cloud provider. Azure is used as an example.
+- [Introduction](#introduction)
+- [Approach](#approach)
+- [Basic Design - Multiple Container Deployment](#basic-design---multiple-container-deployment)
+- [Batch Mode](#batch-mode)
+- [Final Thoughts](#final-thoughts)
 
 ## Introduction
 
-The repository explores a very common use case of SCR.
+The repository explores a common SAS Container Runtime use case. This process is as follows:
 
-1. Read data from a persisted source(ex: csv files)
-2. Score each of the records(scenarios) using a SCR container
-3. Forward the results to some other container for further processing or persistence.
+1. Read data from a persisted source (for example, CSV files).
+2. Score each of the records (scenarios) using a SAS Container Runtime container.
+3. Forward the results to another container for further processing or persistence.
 
 ![simple-scenario](./public/pipeline-scenario.png)
 
@@ -20,29 +20,25 @@ The repository explores a very common use case of SCR.
 
 A multi-container deployment is used to create the pipeline shown in the figure above. The deployment uses the following containers to create the pipeline shown below.
 
-- **pipeline** - Service acting as an entry point to process run time input from user and pass it on to the db service
-
-- **db** - this service reads a specified csv file and sends the data to scrwrapper service - it sends the records to scrwrapper and sends the next one without waiting on a response. For other data sources modify this service to read from the new source.
-
-- **scrwrapper** - Takes the input from the db service, scores it using scr service and sends the output to persist service. The scr container is specified in the SCR_URL environment variable
-
-- **scr** - scr running as a service to score the data
-
-- **persist** - Takes the input sends it to redis for persistence
-
-- **redis** - The redis database service for persisting the results.
-
 ![pipeline-simple](./public/pipeline-simple.png)
 
-## Basic Design - Multi Container Deployment
+- **pipeline** - This service acts as an entry point to process runtime input from the user, and then pass it on to the database service.
 
-All flows controlled via environment variables.
+- **database** - This service reads a specified CSV file and sends the data to the scrwrapper service. The database service does not wait for a response from the scrwrapper service. For other data sources, modify this service to read from the new source.
 
-A service can call other services using the service name as the host.
+- **scrwrapper** - This service takes the input from the database service, scores it using SAS Container Runtime service, and then sends the output to persist service. The SAS Container Runtime container is specified by using the SCR_URL environment variable.
 
-An example:
+- **scr** - This is SAS Container Runtime running as a service to score the data.
 
-In this POC there are services named db and scrwrapper. So the code in the db service can access service in scrwrapper using code as follows. The target url(in this case it is scrwrapper/scrwrapper) is specified in the environment variable.
+- **persist** - This service takes the input and sends it to Redis for persistence.
+
+- **redis** - This is the Redis database service, which persists the results.
+
+## Basic Design - Multiple Container Deployment
+
+All flows are controlled via environment variables.A service can call other services using the service name as the host.
+
+In this proof of concept example, there are services called db and scrwrapper. The code in the db service can access service in scrwrapper using code as follows. The target URL (in this case it is scrwrapper/scrwrapper) is specified in the environment variable.
 
 ```js
 let config = {
@@ -56,26 +52,20 @@ let r = await axios(config);
 
 ```
 
-## Batch mode
+## Batch Mode
 
-Unlike in MAS, the SCR can be used to score in batch.
-A sample code to execute pipeline is shown in scripts/pipeline.js
-In fact this code is very similar to what is in the index.html.
+Unlike in SAS Micro Analytic Service, SAS Container Runtime can be used to score in batch.
 
-One must pay special attention to the container feeding the scrwrapper. Ideally there will be multiple feeders working in parallel to feed that data to scrwrapper. This along with replication of the services would give one the best option to process data in batch.
+A sample code to execute a pipeline is shown in scripts/pipeline.js. This code is very similar to what is in the index.html file.
 
-## Thinking out loud
+**Note**: Pay special attention to the container that feeds scrwrapper. Ideally there are multiple feeders working in parallel to feed that data to scrwrapper. This, along with replication of the services, provides the best option to process data in batch.
 
-The patten in this POC can be used for creating a variety of piplines. Here are  a few examples:
+## Final Thoughts
 
-- **db service**  Change it to read from a database, take a feed from Kafka, ESP or othe streaming services.
+The pattern in this proof of concept can be used to create a variety of pipelines. Here are some examples:
 
-- **redis** Change it to some cloud storage, pass the url to service that calls Viya to do analysis of the output data
+- **Database service** - Change it to read from a database, take a feed from Kafka, SAS Event Stream Processing, or other streaming services.
 
-- Add other services - both SAS and non-SAS containers
+- **Redis** - Change it to a cloud storage, pass the URL to a service that calls the SAS Viya platform to do analysis of the output data.
 
-## What-if OR Ravings of a Mad Man
-
-What if we could create a whole set of SAS containers that could be linked with non-SAS containers to create interesting pipelines. These can take advantage of the scalability and high availability of the cloud.
-
-![what-if](./public/whatif.png)
+- Add other services - both SAS and other types of containers.

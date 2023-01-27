@@ -1,134 +1,164 @@
-# How to develop with this repository
+# How to Develop with This Repository
+
+- [Install](#install)
+- [Setup](#setup)
+- [Build the Images Specific to this Application](#build-the-images-specific-to-this-application)
+- [Start the Services](#start-the-services)
+- [Run the Application from a User Interface](#run-the-application-from-a-user-interface)
+- [Obtain a Redis Viewer](#obtain-a-redis-viewer)
+- [Running on Azure](#running-on-azure)
+  - [Push the Images to Azure Container Registry](#push-the-images-to-azure-container-registry)
+  - [Edit the docker-compose-azure.yml File](#edit-the-docker-compose-azureyml-file)
+  - [Create Azure App Services](#create-azure-app-services)
+- [Run the App](#run-the-app)
+- [Run on a Kubernetes Cluster](#run-on-a-kubernetes-cluster)
 
 ## Install
 
-Install the necessary packages.
+Install the necessary packages:
 
 ```sh
 npm install
 ```
 
-At this point you will have all the necessary js script packages
+At this point you have all the necessary js script packages.
 
-## setup
+## Setup
 
-The example assumes that the SCR image is named homeloan.
-For convenience, a zip file of a homeloan model is included in the models directory. You can import that into SAS Model Manager and create your SCR image.
+The example assumes that the SAS Container Runtime image has the name homeloan.
 
-If you already have SCR models feel free to use those instead. If you choose to use your own, the following changes must be made:
+For convenience, a ZIP file of a homeloan model is included in the models directory. You can import that into SAS Model Manager and create your SAS Container Runtime image.
 
-- Replace all references to hmeq.csv with the csv file appropriate for your model.
-- Replace all references to homeloan with the name of your SCR image.
+If you already have SAS Container Runtime models, you can use those instead. If you use your own models, the following changes must be made:
+
+- Replace all references to hmeq.csv with the CSV file that is appropriate for your model.
+- Replace all references to homeloan with the name of your SAS Container Runtime image.
+
+Run the following command:
 
 ```bash
 scripts/setup.sh
 ```
 
-At this point you have all the docker images needed to run the application
+At this point, you have all the Docker images that are needed to run the application.
 
-## Build the images specific to this application
+## Build the Images Specific to This Application
 
-Issue this command in a bash shell. If you are running cmd shell or power shell
+Issue this command in a bash shell:
+
+```bash
 ./build.sh
+```
 
-## To start the services
+## Start the Services
 
+To start the services, run the following command:
+
+```sh
 docker compose up
+```
 
-## To run the application from an UI
+## Run the Application from a User Interface
 
-Visit this site:  <http://localhost:8080/>
+To run the application from a user interface, do the following:
 
-Enter values and press the Run Pipeline button.
+1. Visit this site:  <http://localhost:8080/>
 
-The values are:
+2. Enter values, and then click the **Run Pipeline** button.
 
-Key - each output record in redis will have a key of the form key:recordno
+The values are as follows:
 
-Count - how many of the records in hmeq csv you want to run.
+Key - each output record in Redis has a key of the form: *key:recordno*.
 
-Since the debug logging is on by default avoid running too many records. If you want to run a lot of them comment out the DEBUG environment variables in docker-compose file.
+Count - The number of records in hmeq.csv that you want to run.
+
+Since the debug logging is on by default, you should avoid running too many records. If you want to run a lot of records, comment out the DEBUG environment variables in docker-compose file.
 
 The application uses hmeq.csv as the data source.
 
-Once the run is complete you can find the data for a given key.
+When the run is complete, you can find the data for a given key.
 
-## redisInsight viewer
+## Obtain a Redis Viewer
 
-There are a few free ones out there. I am using RedisInsight from Redis - but if you use it be prepared to get a call from their sales rep.
+There are a few free Redis viewers available, such as RedisInsight from Redis.
 
 ## Running on Azure
 
-### Push the images to azure cr
+### Push the Images to Azure Container Registry
+
+To push the images to Azure Container Registry, run the following command:
 
 ```sh
 start/push.sh crname crhost
-
-ex: start/push.sh mycr  mycr.azurecr.io
 ```
 
-This will move all the images to your azure cr
+Here is an example:
 
-### Edit docker-compose-azure.yml
+```sh
+start/push.sh mycr  mycr.azurecr.io
+```
 
-Do a global change:
+This moves all the images to your Azure container registry.
 
-Example:
+### Edit the docker-compose-azure.yml File
 
-scrdemosrgcr.azurecr.io to mycr.azurecr.io
+Apply a global change to the docker-compose-azure.yml file to apply your container registry information. For example, rename scrdemosrgcr.azurecr.io to mycr.azurecr.io.
 
-Do not forget to save the file.
+When complete, save the file.
 
-### Create a Azure App Services
+### Create Azure App Services
 
-Use the Azure portal and create a new Azure App
-In the create dialog:
+Use the Azure Portal to create a new Azure App.
 
-- follow the instructions in the window.
+In the Create window, do the following:
 
-- Make sure you select 'Publish" as Docker container
+- Read and follow the instructions that are provided in the window.
 
-- Select your desired region and operating system( Linux is our usual choice)
+- Make sure you select **Publish as Docker container**.
 
-- Select the Next: Dockre button
+- Select your desired region and operating system (Linux is the typical choice).
 
-- In this second window you will do the following:
+- Select the **Next: Docker** button.
 
-    1. Under Options select Docker Compose
+- In the second window, do the following:
 
-    2. Select Azure Container Registry for Image Source
+    1. Under **Options** select **Docker Compose**.
 
-    3. Select your registry
+    2. Select **Azure Container Registry for Image Source**.
 
-    4. For configuration file point it to the docker-compose-azure.yml in your project.
+    3. Select your registry.
 
-    5. Review and Create the App Service.
+    4. For **Configuration File**, point it to the docker-compose-azure.yml file in your project.
 
-    6. Once the service is created you need to set WEBSITES_PORT to 8080
+    5. Select **Review and Create the App Service**.
 
-        - Select configuration
+    6. When the service is created, set **WEBSITES_PORT** to *8080*.
 
-        - Select New Applicatioon Setting.
+        - Select **Configuration**.
 
-        - add WEBSITES_PORT as 8080
+        - Select **New Application Setting**.
 
-        - Save the new values and accept the restart request.
+        - Add WEBSITES_PORT as 8080.
 
-## Running the app
+        - Save the new values and, when prompted, accept the restart request.
 
-In your browser enter the url from the Overview window. Replace https with http.
-For example, my appname is hlpipeline.
-I enter <http://hlpipeline.azurewebsites.net/>
+## Run the App
 
-I have noticed that the first invocaton might take time. You just have to be patient. Once it is up you are good to go.
+In your browser enter the url from the Overview window. Replace https with *http*.
 
-> Since the redis port cannot be exposed thru Azure Apps, you cannot use the redisInsight UI. I think it can be done by setting up a front door. I will leave that as an exercise for the reader.
+For example, if the app name is hlpipeline, you would enter the following:
 
-## Running on a K8s cluster
+<http://hlpipeline.azurewebsites.net/>
 
-1. Convert the docker-compose file to a deployment. yaml file using
- [kompose](https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/)
+**Notes**:
 
-2. Then do your thing on the cluster.
+- The first invocation might take some time.
 
-> Warning: I have not done this step for this app(but have used kompose before) - so leaving this as an exercise for the reader.
+- Since the Redis port cannot be exposed through Azure Apps, you cannot use the RedisInsight user interface.
+
+## Run on a Kubernetes Cluster
+
+1. Convert the docker-compose file to a deployment.yaml file using
+ [kompose](https://kubernetes.io/docs/tasks/configure-pod-container/translate-compose-kubernetes/).
+
+2. Complete your process on the cluster.
