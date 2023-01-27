@@ -1,35 +1,32 @@
 # Information about Accessing DB2 in SAS Container Runtime via Python
 
-## Overview<a name="intro"></a>
-
 This README contains information and instructions about how to access a DB2 database in SAS Container Runtime via a Python module. Here are the tasks:
 
-* [Obtain the Required Libraries](#libreq)
-* [Obtain and Configure the Required Python Package](#pythonpkgreq)
-* [Add the Required Items to the Dockerfile](#addreq)
-* [Review Sample Python Package Code](#code)
-* [Build SAS Container Runtime](#build)
-* [Execute Python Package Code](#exec)
-
-This README also includes information about how to [Access DB2 via Python without SAS Container Runtime](#other).
+- [Obtain the Required Libraries](#obtain-the-required-libraries)
+- [Obtain and Configure the Required Python Package](#obtain-and-configure-the-required-python-package)
+- [Add the Required Items to the Dockerfile](#add-the-required-items-to-the-dockerfile)
+- [Review Sample Python Package Code](#review-sample-python-package-code)
+- [Build and Start a SAS Container Runtime Container](#build-and-start-a-sas-container-runtime-container)
+- [Execute the Python Package Calling DB2](#execute-the-python-package-calling-db2)
+- [Access DB2 via Python without SAS Container Runtime](#access-db2-via-python-without-sas-container-runtime)
 
 ---
 
-## Obtain the Required Libraries<a name="libreq"></a>
+## Obtain the Required Libraries
 
-* gcc: GCC (GNU Compiler Collection) is an integrated distribution of compilers for several major programming languages. These languages currently include C, C++, Objective-C, Objective-C++, Java, Fortran, and Ada.
+- gcc: GCC (GNU Compiler Collection) is an integrated distribution of compilers for several major programming languages. These languages currently include C, C++, Objective-C, Objective-C++, Java, Fortran, and Ada.
 
-* python3-devel: This package contains the header files and configuration that you need to compile Python extension modules (typically written in C or C++), to embed Python into other programs, and to make binary distributions for Python libraries.
+- python3-devel: This package contains the header files and configuration that you need to compile Python extension modules (typically written in C or C++). Use them to embed Python into other programs and to make binary distributions for Python libraries.
 
-* libpam.so.0: A pluggable authentication module (PAM) library.
+- libpam.so.0: A pluggable authentication module (PAM) library.
 
-## Obtain and Configure the Required Python Package<a name="pythonpkgreq"></a>
+## Obtain and Configure the Required Python Package
 
-You must add the ibm-db Python package to the requirements.txt file in order to pick up the IBM DB2 library. 
+You must add the ibm-db Python package to the requirements.txt file in order to pick up the IBM DB2 library.
 
 Here is an example: "ibm-db==3.0.1"
 
-## Add the Required Items to the Dockerfile<a name="addreq"></a>
+## Add the Required Items to the Dockerfile
 
 Here is a Dockerfile sample that shows the Python configuration and installation of the required libraries:
 
@@ -45,7 +42,7 @@ ENV MAS_PYPATH=/usr/bin/python3
 ENV MAS_M2PATH=/mas2py/mas2py.py
 ```
 
-## Review Sample Python Package Code<a name="code"></a>
+## Review Sample Python Package Code
 
 Here is an example of Python package code that performs queries against a DB2 database:
 
@@ -65,7 +62,7 @@ def execute():\n
     return outString\n
 ```
 
-## Build and Start a SAS Container Runtime Container<a name="build"></a>
+## Build and Start a SAS Container Runtime Container
 
 Use these commands to build and start the container:
 
@@ -74,7 +71,7 @@ docker compose build
 docker compose up
 ```
 
-## Execute Python Package Calling DB2<a name="exec"></a>
+## Execute the Python Package Calling DB2
 
 
 Submit the following JSON payload to SAS Container Runtime to execute the module. (Here is a sample endpoint: http://localhost:8080/execute/execute)
@@ -104,7 +101,7 @@ Here is a sample response:
 }
 ```
 
-### Access DB2 via Python without SAS Container Runtime<a name="other"></a>
+## Access DB2 via Python without SAS Container Runtime
 
 Here is an example of stand-alone Python code that accesses DB2 without SAS Container Runtime:
 

@@ -1,84 +1,85 @@
-# Helpful notes on using SCR
+# SAS Container Runtime Tips
 
-## Table of contents
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Running Locally](#running-locally)
+- [Running in Azure Container Instance (ACI)](#running-in-azure-container-instance-aci)
+- [Running in Azure Web Application](#running-in-azure-web-application)
+- [Running in a Kubernetes Cluster](#running-in-a-kubernetes-cluster)
 
-1. [Introduction](#intro)
-2. [Running with Docker Destop](#docker)
-3. [Running in AzureContainer Instance](#aci)
-4. [Running in Azure Web Application](#webapp)
-5. [Running in a Kubernete Cluster](#k8s)
-6. [Using it in Power Apps](#powerapps)
+## [Overview](#overview)
 
----
-
-## Introduction<a name="intro"></a>
-
----
-
-This document discusses some of the common usage patterns for SCR containers.
-The documentation focuses on running SCR on Azure.
+This document includes some common usage patterns for running SAS Container Runtime on Azure. The following figure provides a high-level representation of the process.
 
 ![image](SCRonAzure.png)
 
-Prerequisites to using these notes:
+## [Prerequisites](#prerequisites)
 
-### Recommended software
+### Recommended Software
 
-1. Docker Desktop <https://docs.docker.com/docker-for-windows/install/>. Take all the defaults during install.
+- Docker Desktop <https://docs.docker.com/docker-for-windows/install/>. Take all the defaults during install.
 
-2. Azure cli - <https://docs.microsoft.com/en-us/cli/azure/install-azure-cli>. The document link  <https://docs.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest>
+- Azure CLI - <https://docs.microsoft.com/en-us/cli/azure/install-azure-cli>. The document link  <https://docs.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest>
 
-3. Scripting. You can use what you are comfortable with(python, curl, nodejs, etc.). A great tool for calls with no programming is Postman <https://www.postman.com/downloads/>.
+- Scripting. You can use what you are comfortable with(python, curl, nodejs, etc.). A great tool for calls with no programming is Postman <https://www.postman.com/downloads/>.
 
-### Environment setup
+<!-- no toc -->
+### Environment Setup
 
-1. Make sure you have logged into Azure. If not, use this command: az login. Azure sessions have no timeout which is nice.
-2. Create a ACR(Azure Container Registry) using the Azure portal.
-3. Make sure your SCR image is pushed/published to that  ACR. You can setup ACR as a destination in SAS Viya.
-4. Note the name and version of the container. You will need it to create a container.
+1. Confirm that you are logged in to Azure. If you are not, use this command: `az login` to log in. Azure sessions do not time out.
+2. Create an Azure Container Registry (ACR) using the Azure portal.
+3. Confirm that your SAS Container Runtime image is published to that ACR. (You can setup ACR as a destination in the SAS Viya platform.)
+4. Note the name and version of the container. You need it to create a container.
 
-In this documentation the following conventions are used.
+In this section, the following conventions are used:
 
-1. The ACR is named scrdemosrgcr. (This results in a url of scrdemosrgcr.azurecr.io)
-2. The documentation assumes that the published image is homeloan:0.1.0
+- The ACR is named *scrdemosrgcr*. This results in a url of *scrdemosrgcr.azurecr.io*.
+- It is assumed that the published image is *homeloan:0.1.0*.
 
 Substitute these with your values.
 
-## Running locally<a name="local"></a>
+## [Running Locally](#running-locally)
 
 ---
 
-Once you have published the  SCR image to Azure or to any registry, you can test it locally by using the standard docker commands.
+Once you have published the SAS Container Runtime image to Azure (or to any registry), you can test it locally by using the standard Docker commands.
 
-*FAQ on local repository: You might have to logon to the repository using docker login command <https://docs.docker.com/engine/reference/commandline/login/>*
+*FAQ on the local repository: You might have to log on to the repository using the Docker login command: <https://docs.docker.com/engine/reference/commandline/login/>*
 
-To allow docker to access the ACR, issue this command
+To allow Docker to access the ACR, issue this command:
 
 ```sh
 az acr login -n ACRname
-ex:
+```
+
+For example:
+
+```sh
 az acr login -n scrdemosrgcr
 ```
 
-Start the container with this command
+Start the container using this command:
 
 ```sh
 docker run -p 8080:8080 {your-registry-url}/homeloan:0.1.0
+```
 
-Below are two examples:
+Here are two examples:
+
+```sh
 docker run -p 8080:8080  scrdemosrgcr.azurecr.io/homeloan:0.1.0
 
 docker run -p 8080:8080 acme.repository.com/homeloan:0.1.0
 
 ```
 
-### `Data Points`
+#### Data Points
 
-1. The docker image is in the repository is scrdemosrgcr.azurecr.io.
+1. The Docker image is in the repository is scrdemosrgcr.azurecr.io.
 2. The image is named homeloan:0.1.0
 3. The  API end point for the container is <http://localhost:8080/homeloan>
 
-### A full session
+#### A Full Session
 
 ```sh
 az login
@@ -86,7 +87,7 @@ az acr login -n az acr login -n scrdemosrgcr
 docker run -p 8080:8080 scrdemosrgcr.azurecr.io/homeloan:1.1
 ```
 
-Below is a sample curl command to execute a score.
+Here is a sample curl command to execute a score.
 
 ```sh
 
@@ -117,7 +118,7 @@ The output from this run is a JSON with the same schema as the input
 
 ```
 
-In deference to all the Python fans here is the same example in Python.
+Here is the same example in Python.
 
 ```python
 
@@ -188,43 +189,44 @@ print(data.decode("utf-8"))
 
 ```
 
-Recommend you clean up your local docker after a test using standard docker commands.
+It is recommended you clean up your local Docker after a test (using standard Docker commands).
 
 ---
 
-## Running model in Azure Container Instance(ACI)<a name="aci"></a>
+## [Running in Azure Container Instance (ACI)](#running-in-azure-container-instance-aci)
 
 ---
 
-The quickest way to test your container on Azure is to run it as a Azure Container Instance.
+The quickest way to test your container on Azure is to run it as an Azure Container Instance.
 
-## Creating an ACI Using Azure Portal
+### Creating an ACI Using Azure Portal
 
-The basic steps are:
+Here are the basic steps:
 
-1. Select Container Instances
-2. Select Create
+1. Select **Container Instances**.
+2. Select **Create**.
 3. Set the resource group.
-4. Assign a meaningful name to your new container.
-5. Under Image source select Azure Container Registry  and set the values.
-6. Select Networking.
-7. Set the desired DNS name label. *Strongly* recommend you chose a name that will make sense to your users. This will allow you to access the instance using a name instead of the public IP adddress.  
-8. Under ports add 8080 since the SCR base container runs on this port.  **This is important**
-9. Now create the instance.
+4. Assign a meaningful name to the new container.
+5. For **Image source** select **Azure Container Registry**, and then assign the values.
+6. Select **Networking**.
+7. Set the desired DNS name label. It is strongly recommended you chose a name that is meaningful to your users. This enables you to access the instance using a name instead of the public IP address.  
+8. Under **Ports** add *8080*. This is the port on which the SAS Container Runtime container runs.
+9. Create the instance.
 
-Once it has completed you can access it from your scripts. The key point to remember is that the url for the container has the form ()
+When complete, you can access the instance from your scripts. The URL for the container uses the form ().
 
-### URL for the ACI
+#### URL for the ACI
 
-The url for the ACI has the following syntax
+Access the application at <http://{dnslabel}.eastus.azurecontainer.io:8080>
 
-Now you can access the application at <http://{dnslabel}.eastus.azurecontainer.io:8080>
-So if in step 7 you used *homeloanaci* the final url will be something like this <http://homeloanaci.eastus.azurecontainer.io:8080/>
-The eastus will be replaced by the region you choose to run the ACI.
+For example, if in Step 7 you used *homeloanaci* the final URL will be similar to the following:
+ <http://homeloanaci.eastus.azurecontainer.io:8080/>
 
-### ACI Example
+**Note**: *eastus* will be replaced by the region in which you choose to run the ACI.
 
-Below is a sample curl command.
+##### ACI Example
+
+Here is a sample curl command:
 
 ```sh
 
@@ -248,7 +250,7 @@ curl --location --request POST 'http://homeloanci.eastus.azurecontainer.io:8080/
   '
 ```
 
-A sample python code is below:
+Here is sample Python code:
 
 ```py
 import http.client
@@ -319,58 +321,62 @@ print(data.decode("utf-8"))
 
 ---
 
-## Running in Azure Web Application<a name="webapp"></a>
+## [Running in Azure Web Application](#running-in-azure-web-application)
 
 ---
-The Azure Portal makes it extremely easy to create Azure Web Applications. The steps are listed below for convenience
+The Azure Portal makes it easy to create Azure Web Applications.
 
 ### Steps
 
-1. From Azure Portal select App Services.
-2. Select Create
-3. Set your resource group name
-4. Give a meaningful name for the instance. This will be the first part of the url for the web app.
-5. Select Docker for publish
-6. Select Linux for operating system
+1. In the Azure Portal select **App Services**.
+2. Select **Create**.
+3. Set your resource group name.
+4. Specify a meaningful name for the instance. This will be the first part of the URL for the web app.
+5. For Publish, select **Docker**.
+6. For Operating System, select **Linux**.
 7. Select your region.
-8. Either create Linux Plan or use an existing one.
-9. For Sku and size select the Free F1 plan - that is all you need for demos
-10. Select Next: Docker
-11. In this second page select Azure Container Registry for image source
-12. Complete setting your registry, image and Tag.
-13. Select Review+create.
-14. After the Azure app is up you have to set the WEBSITES_PORT variable to 8080 since the base image runs at this port
+8. Either create a Linux Plan or use an existing one.
+9. For SKU and Size select the **Free F1** plan. This is all that you need for demos.
+10. Select **Next: Docker**.
+11. On the second page, select **Azure Container Registry** for **Image Source**.
+12. Complete the process to set your Registry, Image and Tag.
+13. Select **Review+create**.
+14. After the Azure app is up, set the **WEBSITES_PORT** variable to 8080. The SAS Container Runtime image runs at this port.
 
-    - Select your web app from the list of Web Applications
-    - Select Configurations from the explorer on the left.
-    - Add WEBSITES_PORT with a value of 8080 as a new application setting
-    - Let Azure restart the applications.
+    - Select your web app from the list of Web Applications.
+    - Select **Configurations** from the explorer on the left.
+    - Add **WEBSITES_PORT** and assign a value of 8080 as a new application setting.
+    - Allow Azure to restart the applications.
 
-15. Once the restart has completed(takes a bit of time) your Azure app is ready to run.
+15. When the restart is complete (this can take a while), your Azure app is ready to run.
 
-### Accessing the web application
+#### Accessing the Web Application
 
-Your code will be similar to the previous examples. The url will be of the form
+Your code will be similar to the previous examples. The URL will be of the form:
 
 ```text
     http://XXXX.azurewebsites.net/homeloan
-    
-    where XXXX is the label you specified in step 4 above.
-    ex:
+```
+
+where XXXX is the label that you specified in step 4 above.
+
+For example:
+
+```text
     http://homeloanapp.azurewebsites.net/homeloan
 ```
 
 ---
 
-## Running in a Kubernete Cluster<a name="k8s"></a>
+## [Running in a Kubernetes Cluster](#running-in-a-kubernetes-cluster)
 
 ---
 
-Assumption:
+Assumptions:
 
-1. You have created a cluster using the Azure Portal. Make sure you have attached your container registry to this cluster
+1. You created a cluster using the Azure Portal. Make sure that you attached your container registry to this cluster.
 
-2. You have created a deployment.yaml in some directory(example below assumes it is called base). The sample yml file is shown below
+2. You created a deployment.yaml file in a directory. A sample yaml file is shown below.
 
 ```yml
 
@@ -416,61 +422,63 @@ spec:
 
 ```
 
-## Setup
+### Setup
 
-This is not an essential step. I like to use a namespace for each of my models. This allows me to delete all the pods and services by simply deleting the namespace.  In the example below I am using scrdemo as the namespace. You can also run this in the default namespace.
+**Note**: This is not an essential step.
+
+Using a namespace for each of model enables you to delete all the pods and services by simply deleting the namespace. In the example below, scrdemo is the namespace. You can also run this in the default namespace.
 
 ```sh
 kubectl create ns scrdemo
 kubectl config set-context --current --namespace=scrdemo
 ```
 
-## Simple deployment with a loadBalancer service
+### Simple Deployment with a loadBalancer Service
 
-Change the image in the deployment.yaml to your container
-
-Now create the instance.
+Change the image in the **deployment.yaml** to your container and then create the instance:
 
 ```sh
 cd base
 kubectl apply -f deployment.yaml
 ```
 
-Check and see if the pods are running
+Check to see whether the pods are running:
 
 ```sh
 kubectl get pods
+```
 
-You should get something like this in the log
+You should see something similar to the following in the log:
 
+```sh
 NAME                      READY   STATUS    RESTARTS   AGE
 scrbase-8c8444b5c-6smjn   1/1     Running   0          12m
 scrbase-8c8444b5c-crm4s   1/1     Running   0          12m
-
 ```
 
-If the pod fails to initialize, then try this command to see what is going on
+If the pod fails to initialize, use this command to learn more:
 
 ```sh
 kubectl describe pod <name of the failing pod>
 ```
 
-Most common error is using the wrong name of the image.
+**Note**: The most common error is using the wrong image name.
 
-## Accessing the application
+### Accessing the Application
 
-Issue this command to get the ip address of the service
+Use this command to obtain the IP address of the service:
 
 ```sh
 kubectl get svc
-
-You should see something like this:
-
-NAME      TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)          AGE
-scrbase   LoadBalancer   10.0.16.242   52.146.63.167   8080:31299/TCP   25m
-
 ```
 
-Use the external-ip:8080 as the address of your container(52.0.16.242:8080).
+You should see something similar the following:
+
+```sh
+NAME      TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)          AGE
+scrbase   LoadBalancer   10.0.16.242   52.146.63.167   8080:31299/TCP   25m
+```
+
+Use  *external-ip*:*8080* as the address of your container (52.0.16.242:8080).
 
 ---

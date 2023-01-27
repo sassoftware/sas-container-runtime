@@ -1,7 +1,5 @@
 # Configuring Monitoring for SAS Container Runtime on Kubernetes
 
-## Overview
-
 This README describes how to configure monitoring using Helm for a SAS Container Runtime container that is deployed using Kubernetes.
 
 ## Prerequisites
@@ -13,7 +11,7 @@ The following applications must be installed on the host system where the SAS Co
 
 ## Configuration and Usage
 
-Edit the `sas-container-runtime.yaml` file to specify the number of pods, the SAS Container Runtime image file, resource limit specifications, and the desired environment variables.
+Edit the sas-container-runtime.yaml file to specify the number of pods, the SAS Container Runtime image file, resource limit specifications, and the desired environment variables.
 
 For information about how to configure SAS Container Runtime, see the
  [SAS Container Runtime documentation](https://documentation.sas.com/?cdcId=mascrtcdc&cdcVersion=default).
@@ -28,7 +26,7 @@ kubectl apply -f sas-container-runtime.yaml -f nginx-ingress.yaml
 
 You can install multiple Helm charts to monitor SAS Container Runtime. You configure Helm charts by overriding assigned chart values. For more information, see the Helm documentation.
 
-Here is an example that shows the commands that add some common chart repositories, and then install them.
+Here is an example that shows the commands that add some common chart repositories, and then installs them.
 
 ```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts

@@ -1,5 +1,4 @@
-# Low-Code/No-Code Application with SCR and Azure Power App
+# Low-Code and No-Code Applications with SAS Container Runtime and Azure Power App
 
 ![LowCodeNocode](Lowcode_Nocode.png)
 
-TBD: Full documentation.

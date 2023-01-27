@@ -1,38 +1,40 @@
-# SAS Container Runtime(SCR) - the Low Footprint, High Performance Container for SAS Models
+# SAS Container Runtime Resources
 
-<blockquote>
-SAS Container Runtime is a lightweight OCI (Open Container Initiative)
-compliant Docker container for executing SAS models. Models developed with SAS
-Viya can be published to any container registry.  Users can take advantage of the cloud infrastructure to deploy applications with small footprint and are highly scalable and highly available. This ensures resources can be fully utilized to quickly execute the largest number of models and reduce the effort that is required to manage the environment.
+SAS Container Runtime is a lightweight Open Container Initiative (OCI) compliant container that scores SAS models and decisions. This enables you to run models and decisions on any OCI compliant compute system, including clusters that are based on Docker and Kubernetes. Deployments to cloud or on-premises systems are both supported.
 
-SCR is now part of family of containers that Model Manager publishes: Python containers, R containers and AML containers.
-</blockquote>
+For more information, see [What Is SAS Container Runtime?](https://documentation.sas.com/doc/en/mascrtcdc/default/mascrtag/n0vobwu1imdrzin1xjuc8v717sw0.htm)
 
-## Goal of this repository
+## Overview
 
-This repository was created to go beyond the official documentation of SCR.This repository will be used to provide working examples, articles, links to published material etc.
-
-Please feel free to download and use any material provided here. All material is provided under Apache-2 license.
-
-## Organization of material
-
-- Examples - Contains working examples
-
-- The wiki pages will be used for articles, FAQ's
+The content on this GitHub repository  provides examples and other resources  related to SAS Container Runtime and publishing SAS models to a container destination.
 
 ## Examples
 
-These examples are in the examples directory.
+Here are the items that are included in the [Examples](https://github.com/sassoftware/sas-container-runtime/tree/main/examples) folder.
 
-- `AzureDeployment` - Notes on deploying SCR in ACI, Azure App and a cluster
+- [AzureDeployment](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/AzureDeployment) - Contains information about deploying SAS Container Runtime in an Azure Container Instance (ACI), an Azure Web App, and a cluster.
 
-- `Pipeline` - A multi-container approach to building a scoring pipeline
+- [KnativeModelOps](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/KnativeModOps) - Contains information about using Knative and Kubernetes.
 
-- `scrAuthenticationWithAzureAD` - Configure Authentication for SAS Container Runtime (SCR) in Azure AD
+- [LowCode_NoCode](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/LowCode_NoCode) - Provides an overview of a low-code/no-code approach for SAS Container Runtime with Azure Power Apps.
+
+- [Models](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/models) - Contains sample models.
+
+- [Pipeline](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/pipeline) - Contains information about using a multi-container deployment to build a scoring pipeline.
+
+- [SagMakerRunTime](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/sageMakerRunTime) - Contains information about using Amazon SageMaker hosting services with SAS Container Runtime.
+
+- [Scr-db2](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/scr-db2) - Contains information and instructions about how to access a DB2 database in SAS Container Runtime via a Python module.
+
+- [Scr-docker-monitoring](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/scr-docker-monitoring) - Contains information about how to configure monitoring for a SAS Container Runtime container that is deployed using Docker.
+
+- [Scr-k8s-monitoring](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/scr-k8s-monitoring) - Contains information about how to configure monitoring using Helm for a SAS Container Runtime container that is deployed using Kubernetes.
+
+- [ScrAuthenticationWithAzureAD](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/scrAuthenticationWithAzureAD) - Contains information about how to configure authentication for SAS Container Runtime in Azure Active Directory (Azure AD).
 
 ## Contributing
 
-> We welcome your contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit contributions to this project. 
+> We welcome your contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details about how to submit contributions to this project.
 
 ## License
 
@@ -40,23 +42,26 @@ These examples are in the examples directory.
 
 ## Additional Resources
 
-- [SAS Documentation](https://go.documentation.sas.com/doc/en/mascrtcdc/v_001/mascrtag/n0vobwu1imdrzin1xjuc8v717sw0.htm)
+### SAS Documentation
 
-- [SAS Model Manager: Publishing Requirements and Restrictions](https://go.documentation.sas.com/doc/en/mdlmgrcdc/v_009/mdlmgrug/n1nrmfpk1ysdt6n1a3ysrcljhuuy.htm)
+- [SAS Container Runtime Programming and Administration Guide](https://documentation.sas.com/doc/en/mascrtcdc/default/mascrtag/titlepage.htm)
 
-- [SAS Model Manager: configure Container Publishing Destinations](https://go.documentation.sas.com/doc/en/sasadmincdc/v_016/calpubdest/p02scrqf37kexwn1gi60khpshifz.htm#p1f2d2x0t2a3vvn1j88t6ix1f6gm)
+- [SAS Container Runtime Model Score Code and Decision Object Support and Limitations](https://documentation.sas.com/en/mascrtcdc/default/mascrtag/n1b1koft5k3axqn1h3ewelfi4q2s.htm)
 
-- [How to Publish a SAS Model to Azure with SCR: A Start-to-Finish Guide](https://communities.sas.com/t5/SAS-Communities-Library/How-to-Publish-a-SAS-Model-to-Azure-with-SCR-A-Start-to-Finish/ta-p/768714)
+- [SAS Viya Platform Administration: Configure Container Publishing Destinations](https://documentation.sas.com/doc/en/sasadmincdc/default/calpubdest/p02scrqf37kexwn1gi60khpshifz.htm#p1f2d2x0t2a3vvn1j88t6ix1f6gm)
 
-- [Using the SAS Container Runtime for publishing SAS models to Kubernetes on the Azure cloud](https://communities.sas.com/t5/SAS-Communities-Library/Using-the-SAS-Container-Runtime-for-publishing-SAS-models-to/ta-p/760835)
+### SAS Communities Articles
+
+- [How to Publish a SAS Model to Azure with SAS Container Runtime: A Start-to-Finish Guide](https://communities.sas.com/t5/SAS-Communities-Library/How-to-Publish-a-SAS-Model-to-Azure-with-SCR-A-Start-to-Finish/ta-p/768714)
+
+- [Using SAS Container Runtime for Publishing SAS Models to Kubernetes on the Azure Cloud](https://communities.sas.com/t5/SAS-Communities-Library/Using-the-SAS-Container-Runtime-for-publishing-SAS-models-to/ta-p/760835)
 
 - [How to Publish a Decision to Azure with SAS Container Runtime](https://communities.sas.com/t5/SAS-Communities-Library/How-to-Publish-a-Decision-to-Azure-with-SAS-Container-Runtime/ta-p/769778)
 
-- [Using Private Docker Publishing Destinations With SAS Model
-Manager and SAS Open Model Manager](https://communities.sas.com/t5/SAS-Communities-Library/What-s-New-with-SAS-Model-Manager-SAS-Runtime-Container/ta-p/760475)
+- [Deploying SAS Container Runtime models on Azure Container Instances](https://communities.sas.com/t5/SAS-Communities-Library/Deploying-SAS-Container-Runtime-models-on-Azure-Container/ta-p/850281)
 
-- [What’s New with SAS Model Manager? SAS Runtime Container](https://communities.sas.com/t5/SAS-Communities-Library/What-s-New-with-SAS-Model-Manager-SAS-Runtime-Container/ta-p/760475)
+ - [Have Questions About SAS Container Runtime? Ask the Experts!](https://communities.sas.com/t5/SAS-Communities-Library/Have-Questions-About-SAS-Container-Runtime-Ask-the-Experts/ta-p/834359)
 
 - [ModelOps and DecisionOps for the Modern World](https://communities.sas.com/t5/SAS-Communities-Library/ModelOps-and-DecisionOps-for-the-Modern-World/ta-p/750451)
 
-
+- [What's New with SAS Model Manager? SAS Runtime Container](https://communities.sas.com/t5/SAS-Communities-Library/What-s-New-with-SAS-Model-Manager-SAS-Runtime-Container/ta-p/760475)

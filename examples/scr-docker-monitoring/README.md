@@ -1,7 +1,5 @@
 # Configuring Monitoring for SAS Container Runtime on Docker
 
-## Overview
-
 This README describes how to configure monitoring for a SAS Container Runtime container that is deployed using Docker.
 
 ## Prerequisites
@@ -13,7 +11,7 @@ The following applications must be installed on the host system where the SAS Co
 
 ## Configuration and Usage
 
-Edit the `docker-compose.yaml` file to specify the SAS Container Runtime image file and the desired environment variables.
+Edit the docker-compose.yaml file to specify the SAS Container Runtime image file and the desired environment variables.
 
 For information about how to configure SAS Container Runtime, see the
  [SAS Container Runtime documentation](https://documentation.sas.com/?cdcId=mascrtcdc&cdcVersion=default).
