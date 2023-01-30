@@ -1,28 +1,32 @@
-# Information about Accessing Azure SQL in SAS Container Runtime via Python
+# Accessing Azure SQL in SAS Container Runtime via Python
 
 ## Overview<a name="intro"></a>
 
-This README contains information and instructions about how to access an Azure SQL database in SAS Container Runtime via a Python module. You can refer to [Azure's documentation](https://learn.microsoft.com/en-us/azure/azure-sql/database/connect-query-python?view=azuresql). Here are the tasks:
+This README contains information and instructions about how to access an Azure SQL database in SAS Container Runtime via a Python module. For more information about Azure, see the [Azure documentation](https://learn.microsoft.com/en-us/azure/azure-sql/database/connect-query-python?view=azuresql).
 
-* [Requirements](#req)
-* [SAS ID Python code node](#code)
+Here are the requirements and tasks that are involved in this process:
+
+* [Prerequisites](#req)
+* [SAS Intelligent Decisioning Python Code Node](#code)
 * [Create a Dockerfile](#dockerfile)
-* [Build SAS Container Runtime](#build)
-* [Execute the SCR](#exec)
+* [Build and Start a SAS Container Runtime Container](#build)
+* [Execute the Python Package Calling an Azure SQL Database](#exec)
 
 ---
 
-## Requirements<a name="req"></a>
+## Prerequisites<a name="req"></a>
 
-- SAS Intelligent Decisioning with a Docker Repository as publishing destination configured
-- An environment with docker installed and access to the Docker repository to pull and build the image
+The following items are required before you begin this process:
 
-## Intelligent Decisioning Python code node <a name="code"></a>
+* SAS Intelligent Decisioning with a Docker Repository configured as a publishing destination.
+* An environment with Docker installed.
+* Access to the Docker repository to pull and build the image.
 
-The example dataset `hmeq` can be found in [SAS Viya Datasets examples](https://support.sas.com/documentation/onlinedoc/viya/examples.htm), an additional column was created as a Primary Key `id` for purpose of example.
+## SAS Intelligent Decisioning Python Code Node <a name="code"></a>
 
-Here is an example of Python code that performs queries against an Azure SQL database, and must be inside the [Python Node](https://go.documentation.sas.com/doc/en/edmcdc/v_030/edmug/n04vfc1flrz8jsn1o5jblnbgx6i3.htm) inside Intelligent Decisioning:
+The example data set `hmeq` can be found in [SAS Viya Datasets examples](https://support.sas.com/documentation/onlinedoc/viya/examples.htm). An additional column, `id`, was created as a Primary Key for this example.
 
+The following Python code performs queries against an Azure SQL database. It must be inside a [Python Node](https://go.documentation.sas.com/doc/en/edmcdc/v_030/edmug/n04vfc1flrz8jsn1o5jblnbgx6i3.htm) in SAS Intelligent Decisioning.
 
 ```python
 import pyodbc
@@ -62,7 +66,7 @@ conn = connect()
 def execute (id):
     'Output:CLAGE,CLNO,DEBTINC,DELINQ,DEROG,JOB,LOAN,MORTDUE,NINQ,REASON,VALUE,YOJ'
     '''DependentPackages: pandas,pyodbc'''
-	
+
     global conn
 
     retry = True
@@ -94,17 +98,17 @@ def execute (id):
 
 ```
 
-### Notes: 
+### Notes:
 
-1. The "DependentPackages" will be installed with the container when published, `pyodbc` is required.
+1. The "DependentPackages" are installed with the container when published. Note that  `pyodbc` is required.
 
-2. Since it is unlikely that the Viya installation will include the Microsoft ODBC drivers along with the python installation, the decision will not run in the context o SAS Intelligent Decisioning UI (CAS), only through the SAS Container Runtime.
+2. Since it is unlikely that the SAS Viya platform installation will include the Microsoft ODBC drivers along with the Python installation, the decision will not run in the context of the SAS Intelligent Decisioning user interface (CAS). It will run only through SAS Container Runtime.
 
 ## Create a Dockerfile<a name="dockerfile"></a>
 
-After the previous node has been added and published to a Container Destination, create a `Dockerfile` that will modify the container by installing the required ODBC drivers as follows:
+After the previous node is added and published to a container destination, create a Dockerfile that will modify the container by installing the required ODBC drivers. Here is a sample script:
 
-**Attention: Running this script will automatically accept two Microsoft's EULAs, if you are unfamiliar with them, they should be reviewed.**
+**Attention: Running this script automatically accepts two Microsoft End User License Agreements. If you are unfamiliar with these license agreements, you should reivew them.**
 
 ```sh
 ## If editing the Dockerfile created when published to Github remove the "FROM" row
@@ -125,7 +129,7 @@ RUN microdnf install -y unixODBC-devel
 
 ## Build and Start a SAS Container Runtime Container<a name="build"></a>
 
-Move to the folder where the `Dockerfile` is located.
+Navigate to the folder where the Dockerfile is located.
 
 Use these commands to build the container:
 
@@ -143,7 +147,7 @@ docker run --name scr_odbc \
            -p 8080:8080 decision_odbc
 ```
 
-## Execute Python Package Calling Azure SQL database<a name="exec"></a>
+## Execute Python Package Calling Azure SQL Database<a name="exec"></a>
 
 Submit the following JSON payload to SAS Container Runtime to execute the module. (Here is a sample endpoint: http://localhost:8080/DecisionName)
 

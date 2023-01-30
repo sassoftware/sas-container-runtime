@@ -24,6 +24,8 @@ Here are the items that are included in the [Examples](https://github.com/sassof
 
 - [SagMakerRunTime](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/sageMakerRunTime) - Contains information about using Amazon SageMaker hosting services with SAS Container Runtime.
 
+- [scr-AzureSQL](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/scr-AzureSQL) - Contains information and instructions about how to access an Azure SQL database in SAS Container Runtime via a Python module.
+
 - [Scr-db2](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/scr-db2) - Contains information and instructions about how to access a DB2 database in SAS Container Runtime via a Python module.
 
 - [Scr-docker-monitoring](https://github.com/sassoftware/sas-container-runtime/tree/main/examples/scr-docker-monitoring) - Contains information about how to configure monitoring for a SAS Container Runtime container that is deployed using Docker.
