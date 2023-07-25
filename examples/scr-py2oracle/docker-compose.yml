@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  scr:
+    build: .
+    restart: always
+    container_name: scr_test
+    ports:
+      - 8080:8080 
+    environment:
+      - SAS_SCR_APP_PATH=/execute
+      - SAS_SCR_LOG_STRUCTURED=true
+      
+      # Loggers 
+      - SAS_SCR_LOG_LEVEL_com.sas.mas.solo=INFO
+      
+    volumes:
+      - modules:/modules      
+volumes:
+  modules:

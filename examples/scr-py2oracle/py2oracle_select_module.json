@@ -1,0 +1,6 @@
+{  
+"version":1,  
+"source": "def execute(in_int):\n    'Output: out_string'\n    import oracledb\n    connection = oracledb.connect(\n        user='ORA_DSTEST1',\n        password='Pass99',\n        dsn='<server>:<port>/<path>')\n    cursor = connection.cursor()\n    for row in cursor.execute('select correlation_id from mas_sqlstmt where x=:1', (in_int,)):\n        out_string = row\n        return out_string\n",  
+"type": "text/x-python",    
+"scope": "public"
+}
