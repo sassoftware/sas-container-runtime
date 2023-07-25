@@ -3,7 +3,7 @@
 This README contains information and instructions about how to access an Oracle database in SAS Container Runtime via a Python module. Here are the tasks:
 
 - [Obtain and Configure the Required Python Package](#obtain-and-configure-the-required-python-package)
-- [Add the Required Items to the Dockerfile](#add-the-requirements.txt-location-to-the-dockerfile)
+- [Add the requirements.txt location to the Dockerfile](#add-the-requirements.txt-location-to-the-dockerfile)
 - [Review Sample Python Package Code](#review-sample-python-package-code)
 - [Build and Start a SAS Container Runtime Container](#build-and-start-a-sas-container-runtime-container)
 - [Execute the Python Package Calling Oracle](#execute-the-python-package-calling-oracle)
